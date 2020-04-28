@@ -1,0 +1,4 @@
+peqnp
+numpy
+scikit-learn
+matplotlib
