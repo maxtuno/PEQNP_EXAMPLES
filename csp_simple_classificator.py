@@ -79,4 +79,4 @@ if __name__ == '__main__':
             print('Accuracy Score : {}'.format(score))
 
             if score >= epsilon:
-                exit(0)
+                break
