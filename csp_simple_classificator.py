@@ -22,61 +22,77 @@ SOFTWARE.
 
 import numpy as np
 import peqnp as pn
-from sklearn import datasets
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.datasets import make_classification
+import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
 
-if __name__ == '__main__':
+X, y = make_classification(n_features=2, n_redundant=0, n_informative=2, random_state=1, n_clusters_per_class=1, n_samples=1000)
 
-    n, epsilon = 100, 0.9
+X = MinMaxScaler().fit_transform(X)
+X *= (max(X.flatten()) - min(X.flatten()))
+X_train, X_test, y_train, y_test = train_test_split(X, y)
 
-    iris = datasets.load_iris()
+cm = plt.cm.RdBu
+cm_bright = ListedColormap(['#FF0000', '#0000FF'])
 
-    X_train, X_test, Y_train, Y_test = train_test_split((iris.data[:n] * 10), iris.target[:n], shuffle=True)
+plt.scatter(X_test[:, 0], X_test[:, 1], c=y_test, cmap=cm_bright, edgecolors='k')
+plt.savefig('raw.png')
+plt.close()
 
-    bt = 0
-    while True:
+pn.engine(bits=int(sum(X.flatten())).bit_length() + 1)
 
-        bt += 1
+T = pn.vector(size=X_train[0].size)
 
-        print('bits : {}'.format(bt))
+a = pn.integer()
+b = pn.integer()
+c = pn.integer()
+d = pn.integer()
+o = pn.integer()
 
-        pn.engine(bits=bt)
+assert c + o < b
 
-        T = pn.vector(size=X_train[0].size)
+for x, y in zip(X_train, y_train):
+    if y == 0:
+        assert a <= np.matmul(T, x) <= b
+    elif y == 1:
+        assert c <= np.matmul(T, x) <= d
 
-        a = pn.integer()
-        b = pn.integer()
+top = 0
+while pn.satisfy():
+    T_ = np.vectorize(int)(T)
+    a_ = int(a)
+    b_ = int(b)
+    c_ = int(c)
+    d_ = int(d)
+    o_ = int(o)
 
-        for x, y in zip(X_train, Y_train):
-            if y == 0:
-                assert np.matmul(T, x) <= a
-            elif y == 1:
-                assert a < np.matmul(T, x) <= b
-            elif y == 2:
-                assert b < np.matmul(T, x)
+    y_pred = np.zeros(shape=(y_test.size,), dtype=int)
+    for i, x in enumerate(X_test):
+        if a_ <= np.matmul(T_, x) <= b_:
+            y_pred[i] = 0
+        elif c_ <= np.matmul(T_, x) <= d_:
+            y_pred[i] = 1
 
-        if pn.satisfy():
-            T = np.vectorize(int)(T)
-            a = int(a)
-            b = int(b)
+    score = accuracy_score(y_test, y_pred)
 
-            Y_pred = np.zeros(shape=(Y_test.size,), dtype=int)
-            for i, x in enumerate(X_test):
-                if np.matmul(T, x) <= a:
-                    Y_pred[i] = 0
-                elif a < np.matmul(T, x) <= b:
-                    Y_pred[i] = 1
-                elif b < np.matmul(T, x):
-                    Y_pred[i] = 2
+    if score > top:
+        top = score
 
-            print('T: {}'.format(T.tolist()))
-            print('a: {}'.format(a))
-            print('b: {}'.format(b))
+        print('T: {}'.format(T_.tolist()))
+        print('a: {}'.format(a_))
+        print('b: {}'.format(b_))
+        print('c: {}'.format(c_))
+        print('d: {}'.format(d_))
+        print('o: {}'.format(o_))
 
-            score = accuracy_score(Y_test, Y_pred)
+        print('Accuracy Score : {}'.format(score))
 
-            print('Accuracy Score : {}'.format(score))
+        plt.scatter(X_test[:, 0], X_test[:, 1], c=y_pred, cmap=cm_bright, edgecolors='k')
+        plt.savefig('cls.png')
+        plt.close()
 
-            if score >= epsilon:
-                break
+        if score == 1:
+            break
