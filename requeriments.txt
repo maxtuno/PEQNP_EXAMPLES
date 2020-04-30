@@ -2,3 +2,4 @@ peqnp
 numpy
 scikit-learn
 matplotlib
+opencv-python
