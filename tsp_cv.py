@@ -25,6 +25,7 @@ import numpy as np
 import peqnp as pn
 
 
+# demo: https://youtu.be/uDWaY742-K8
 # ref: https://stackoverflow.com/questions/38827505/detecting-colored-circle-and-its-center-using-opencv
 
 def distance(seq):
