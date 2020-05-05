@@ -1,0 +1,3 @@
+peqnp
+numpy
+matplotlib
