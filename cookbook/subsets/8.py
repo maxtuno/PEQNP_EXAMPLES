@@ -20,28 +20,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import functools
-import operator
 import peqnp as pn
+import numpy as np
 
 
-def ands(x, pos):
-    return functools.reduce(operator.iand, [x[i] for i in pos])
+def chunks(lst1, lst2, n):
+    for i in range(0, len(lst1), n):
+        yield (lst1[i:i + n], lst2[i:i + n], list(range(i + 1, i + n + 1)))
 
 
 if __name__ == '__main__':
 
-    n = 10
+    n = 9
+    m = 3
 
     pn.engine(10)
 
-    xs = pn.vector(size=n)
+    xs = np.asarray(pn.vector(size=n))
 
-    pn.all_different(xs)
-    pn.apply_single(xs, lambda x: 0 < x <= n)
-    sub = pn.subset(xs, k=3, empty=0)
+    pn.apply_single(xs.flatten(), lambda x: 0 < x <= n)
+    pn.all_different(xs.flatten())
 
-    assert pn.one_of([ands(sub, pos) for x in xs for pos in [[0, 1, 2], [7, 8, 9]]]) != 0
+    z, x = pn.subsets(xs.flatten(), k=m)
+
+    y = [pn.switch(z, i, neg=True) for i in range(n)]
+
+    for u, v, l in chunks(y, x, m):
+        assert sum(u) == pn.one_of([0, m])
+        assert sum(v) == pn.one_of([0, sum(l)])
+        assert np.prod(v) == pn.one_of([0, np.prod(l)])
 
     while pn.satisfy():
-        print(xs)
+        print(np.vectorize(int)(z.binary))
+        print(np.vectorize(int)(xs))
+        print()
