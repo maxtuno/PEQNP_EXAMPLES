@@ -15,4 +15,4 @@
 
 7- All combination of 4 digits with numbers from in 1, 2, 3.
 
-8- All combinations of 10 digits where at most 3 digits are join.
+8- All combinations of 10 digits where at least 3 digits are join.
