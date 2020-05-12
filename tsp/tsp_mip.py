@@ -40,7 +40,7 @@ def oracle(seq):
 
 if __name__ == '__main__':
 
-    n = 10
+    n = 9
     data = np.random.logistic(size=(n, 2))
     D = np.zeros(shape=(n, n))
     for i in range(n):
