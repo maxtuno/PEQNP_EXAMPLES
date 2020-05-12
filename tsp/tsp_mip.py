@@ -39,6 +39,8 @@ def oracle(seq):
 
 
 if __name__ == '__main__':
+    
+    # Note: This model has problems, we are working to find out what it is, it works, but sometimes it does not.
 
     n = 9
     data = np.random.logistic(size=(n, 2))
