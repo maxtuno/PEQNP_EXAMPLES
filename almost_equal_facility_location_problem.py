@@ -40,7 +40,7 @@ for i in range(n):
     for j in range(cls):
         D[i][j] = np.linalg.norm(A[i] - C[j])
 
-optimal = 0
+optimal = n // cls
 while True:
   pn.engine()
 
