@@ -6,3 +6,5 @@ The PEQNP System its a automatic CNF encoder and SAT Solver for General Constrai
 
 pip install PEQNP --upgrade
 
+This problems for the version <= 2 for version >= 2 use www.peqnp.com on google colab.
+
